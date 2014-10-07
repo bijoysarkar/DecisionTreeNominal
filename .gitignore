@@ -43,6 +43,9 @@ Temporary Items
 .apdisk
 /bin/
 
+
+*.class
+
 #eclipse
 .classpath
 .project
