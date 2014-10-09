@@ -172,44 +172,39 @@ public class DecisionTreeImpl extends DecisionTree {
 	}
 
 	private void prune(DecTreeNode rootNode, List<Instance> tuneSet) {
-		while (pruneIteration(rootNode, tuneSet))
-			;
-	}
-
-	private boolean pruneIteration(DecTreeNode rootNode, List<Instance> tuneSet) {
 
 		double initial_accuracy = calculateAccuracy(tuneSet);
-		double max_accuracy = Double.MIN_NORMAL;
-		DecTreeNode prune_node = null;
-
-		// Iterate, set to terminal, get accuracy and unset terminal at each
-		// internal node
-		// Keep a pointer with maximum accuracy till now
-		// End of each full traversal actually prune the node with maximum
-		// accuracy on pruning
-		List<DecTreeNode> queue = new ArrayList<DecTreeNode>();
-		queue.add(rootNode);
-		// Since tree so no visited marking required
-		while (!queue.isEmpty()) {
-			DecTreeNode decTreeNode = queue.remove(0);
-			if (!decTreeNode.terminal) {
-				decTreeNode.terminal = true;
-				double prune_accuracy = calculateAccuracy(tuneSet);
-				if (prune_accuracy > max_accuracy) {
-					max_accuracy = prune_accuracy;
-					prune_node = decTreeNode;
+		while (true) {
+			// Iterate, set to terminal, get accuracy and unset terminal at each
+			// internal node
+			// Keep a pointer with maximum accuracy till now
+			// End of each full traversal actually prune the node with maximum
+			// accuracy on pruning
+			double max_accuracy = Double.MIN_NORMAL;
+			DecTreeNode prune_node = null;
+			List<DecTreeNode> queue = new ArrayList<DecTreeNode>();
+			queue.add(rootNode);
+			while (!queue.isEmpty()) {
+				DecTreeNode decTreeNode = queue.remove(0);
+				if (!decTreeNode.terminal) {
+					decTreeNode.terminal = true;
+					double prune_accuracy = calculateAccuracy(tuneSet);
+					if (prune_accuracy > max_accuracy) {
+						max_accuracy = prune_accuracy;
+						prune_node = decTreeNode;
+					}
+					decTreeNode.terminal = false;
+					queue.addAll(decTreeNode.children);
 				}
-				decTreeNode.terminal = false;
-				queue.addAll(decTreeNode.children);
+			}
+
+			if (max_accuracy >= initial_accuracy && prune_node != null) {
+				prune_node.terminal = true;
+				prune_node.children.clear();
+			} else {
+				break;
 			}
 		}
-
-		if (max_accuracy >= initial_accuracy && prune_node != null) {
-			prune_node.terminal = true;
-			prune_node.children.clear();
-			return true;
-		}
-		return false;
 	}
 
 	@Override
