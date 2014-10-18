@@ -143,7 +143,7 @@ public class DecisionTreeImpl extends DecisionTree {
 		// Find best question
 		Map<Integer, Double> infoGain = calculateRootInfoGain(
 				processedAttributes, instanceList);
-		double maxInfoGain = Double.MIN_VALUE;
+		double maxInfoGain = -Double.MAX_VALUE;
 		Integer maxInfoGainAttribute = null;
 		for (Entry<Integer, Double> entry : infoGain.entrySet()) {
 			if (entry.getValue() > maxInfoGain) {
@@ -180,7 +180,7 @@ public class DecisionTreeImpl extends DecisionTree {
 			// Keep a pointer with maximum accuracy till now
 			// End of each full traversal actually prune the node with maximum
 			// accuracy on pruning
-			double max_accuracy = Double.MIN_NORMAL;
+			double max_accuracy = -Double.MAX_VALUE;
 			DecTreeNode prune_node = null;
 			List<DecTreeNode> queue = new ArrayList<DecTreeNode>();
 			queue.add(rootNode);
@@ -201,6 +201,7 @@ public class DecisionTreeImpl extends DecisionTree {
 			if (max_accuracy >= initial_accuracy && prune_node != null) {
 				prune_node.terminal = true;
 				prune_node.children.clear();
+				initial_accuracy = max_accuracy;
 			} else {
 				break;
 			}
